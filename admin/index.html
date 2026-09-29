@@ -6,7 +6,7 @@
 </style></head>
 <body><div class="wrap">
 <div class="brand"><div><h1>ANEA JWELS</h1><div class="muted">Admin Dashboard</div></div><button id="logoutBtn" hidden onclick="logout()">Logout</button></div>
-<div class="box" id="login"><h2>Secure Admin OTP Login</h2><div class="row"><div><label>Phone</label><input id="phone" placeholder="+919061695302"></div><div><label>OTP</label><input id="otp" placeholder="6 digit OTP"></div></div><button onclick="sendOtp()">Send OTP</button><button onclick="verifyOtp()">Verify OTP</button><p class="msg" id="msg"></p></div>
+<div class="box" id="login"><h2>Secure Admin Email Login</h2><div class="row"><div><label>Admin Email</label><input id="email" readonly></div><div><span></span></div></div><button onclick="sendEmailLogin()">Send Login Email</button><p class="msg" id="msg"></p></div>
 <div id="app" hidden>
 <div class="grid"><div class="stat">Products<b id="p">0</b></div><div class="stat">Orders<b id="o">0</b></div><div class="stat">Customers<b id="c">0</b></div><div class="stat">Pending Payments<b id="pay">0</b></div></div>
 <div class="tabs"><button class="active" data-tab="dashboard">Dashboard</button><button data-tab="products">Products</button><button data-tab="categories">Categories</button><button data-tab="orders">Orders</button><button data-tab="customers">Customers</button><button data-tab="reviews">Reviews</button></div>
@@ -42,4 +42,4 @@ async function loadReviews(){const r=await sb.from('reviews').select('*,products
 async function reviewStatus(id,status){const r=await sb.from('reviews').update({status}).eq('id',id);if(r.error)alert(r.error.message);loadReviews()}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function date(v){return v?new Date(v).toLocaleString():'—'}
 (async()=>{const s=await sb.auth.getSession();if(s.data.session){const a=await sb.from('admin_profiles').select('user_id').eq('user_id',s.data.session.user.id).maybeSingle();if(a.data){$('login').hidden=true;$('app').hidden=false;$('logoutBtn').hidden=false;loadAll()}}})();
-</script></body></html>
+</script><script>document.getElementById('email').value=atob('YWJhbWVlbjUzMDJAZ21haWwuY29t');async function sendEmailLogin(){const email=document.getElementById('email').value;const r=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});document.getElementById('msg').textContent=r.error?r.error.message:'Login email sent. Check your inbox.'}</script></body></html>
