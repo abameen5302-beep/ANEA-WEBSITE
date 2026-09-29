@@ -41,7 +41,7 @@
 </div></section>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/ANEA-WEBSITE/config.js"></script><script src="/ANEA-WEBSITE/customer-shop-ui.js"></script><script src="/ANEA-WEBSITE/customer-shop.js"></script>
 <script>
-(function(){const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);let products=[];
+(function(){window.db=window.db||supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const db=window.db;let products=[];
 async function load(){const r=await db.from('products').select('id,product_id,name,price,images').neq('availability','hidden').order('created_at',{ascending:false});products=r.data||[];const s=document.getElementById('anea-review-product');s.innerHTML='<option value="">Select product</option>'+products.map(p=>'<option value="'+p.id+'">'+aneaEsc(p.name)+' ('+aneaEsc(p.product_id)+')</option>').join('');aneaRender(products)}
 window.aneaSearch=function(){const q=(document.getElementById('anea-search').value||'').toLowerCase();aneaRender(products.filter(p=>(p.name+' '+p.product_id).toLowerCase().includes(q)))};
 function aneaRender(list){const el=document.getElementById('anea-results');el.innerHTML=list.length?list.map(p=>'<div class="anea-card">'+(p.images&&p.images[0]?'<img src="'+aneaEsc(p.images[0])+'">':'')+'<h3>'+aneaEsc(p.name)+'</h3><p>'+aneaEsc(p.product_id)+'</p><b>₹'+Number(p.price||0).toFixed(2)+'</b></div>').join(''):'<p>No matching products found.</p>'}
