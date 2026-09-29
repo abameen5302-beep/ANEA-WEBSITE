@@ -22,4 +22,29 @@
 </main>
 <footer class="footer"><div><div class="brand">ANEA JWELS</div><small>Premium anti-tarnish jewellery · Poonoor, Kerala, India</small></div><small>© 2026 ANEA JWELS. All rights reserved.</small></footer>
 <a class="wa" href="https://wa.me/918089731324" target="_blank">WhatsApp</a>
-</body></html>
+<style>
+#anea-live-search{max-width:1100px;margin:35px auto;padding:24px;background:#fffaf5;border-radius:20px}
+#anea-live-search input,#anea-review-form input,#anea-review-form textarea,#anea-review-form select{width:100%;padding:12px;margin:6px 0;border:1px solid #d8c8bb;border-radius:9px}
+#anea-results{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:18px}.anea-card{padding:14px;border:1px solid #eadfd4;border-radius:14px;background:#fff}.anea-card img{width:100%;height:190px;object-fit:cover;border-radius:10px}.anea-review{padding:12px;border-top:1px solid #eadfd4;margin-top:12px}.anea-review img{max-width:120px;border-radius:9px}.anea-btn{background:#2b1712;color:#fff;border:0;padding:11px 16px;border-radius:9px;cursor:pointer}
+</style>
+<section id="anea-live-search">
+<h2>Find Your Jewellery</h2><input id="anea-search" placeholder="Search by product name or Product ID..." oninput="aneaSearch()">
+<div id="anea-results"><p>Loading products...</p></div>
+<div id="anea-review-form" style="margin-top:30px">
+<h2>Share Your Purchase</h2><p>Purchased from ANEA JWELS? Share your photo, rating and feedback. Reviews appear publicly only after admin approval.</p>
+<select id="anea-review-product"><option value="">Select product</option></select>
+<input id="anea-review-name" placeholder="Your name">
+<select id="anea-review-rating"><option value="5">★★★★★ 5</option><option value="4">★★★★ 4</option><option value="3">★★★ 3</option><option value="2">★★ 2</option><option value="1">★ 1</option></select>
+<textarea id="anea-review-text" placeholder="Write your feedback"></textarea>
+<input id="anea-review-photo" type="file" accept="image/jpeg,image/png,image/webp">
+<button class="anea-btn" onclick="aneaSubmitReview()">Submit Feedback</button><p id="anea-review-msg"></p>
+</div></section>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="/ANEA-WEBSITE/config.js"></script>
+<script>
+(function(){const db=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);let products=[];
+async function load(){const r=await db.from('products').select('id,product_id,name,price,images').neq('availability','hidden').order('created_at',{ascending:false});products=r.data||[];const s=document.getElementById('anea-review-product');s.innerHTML='<option value="">Select product</option>'+products.map(p=>'<option value="'+p.id+'">'+aneaEsc(p.name)+' ('+aneaEsc(p.product_id)+')</option>').join('');aneaRender(products)}
+window.aneaSearch=function(){const q=(document.getElementById('anea-search').value||'').toLowerCase();aneaRender(products.filter(p=>(p.name+' '+p.product_id).toLowerCase().includes(q)))};
+function aneaRender(list){const el=document.getElementById('anea-results');el.innerHTML=list.length?list.map(p=>'<div class="anea-card">'+(p.images&&p.images[0]?'<img src="'+aneaEsc(p.images[0])+'">':'')+'<h3>'+aneaEsc(p.name)+'</h3><p>'+aneaEsc(p.product_id)+'</p><b>₹'+Number(p.price||0).toFixed(2)+'</b></div>').join(''):'<p>No matching products found.</p>'}
+window.aneaSubmitReview=async function(){const pid=document.getElementById('anea-review-product').value,name=document.getElementById('anea-review-name').value.trim(),text=document.getElementById('anea-review-text').value.trim(),rating=Number(document.getElementById('anea-review-rating').value),file=document.getElementById('anea-review-photo').files[0],m=document.getElementById('anea-review-msg');if(!pid||!name||!text)return m.textContent='Please select a product and complete the review.';let photo_url=null;if(file){if(file.size>5242880)return m.textContent='Photo must be 5MB or smaller.';const ext=file.name.split('.').pop().toLowerCase(),path=crypto.randomUUID()+'.'+ext;const u=await db.storage.from('customer-review-photos').upload(path,file,{contentType:file.type,upsert:false});if(u.error)return m.textContent=u.error.message;photo_url=db.storage.from('customer-review-photos').getPublicUrl(path).data.publicUrl}const r=await db.from('reviews').insert({product_id:pid,customer_name:name,rating,review_text:text,photo_url,status:'pending'});m.textContent=r.error?r.error.message:'Thank you! Your feedback is submitted for approval.';if(!r.error){document.getElementById('anea-review-text').value='';document.getElementById('anea-review-photo').value='';}};
+function aneaEsc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}load()})();
+</script></body></html>
