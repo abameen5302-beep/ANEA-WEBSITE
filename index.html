@@ -42,7 +42,7 @@
 <input id="anea-review-photo" type="file" accept="image/jpeg,image/png,image/webp">
 <button class="anea-btn" onclick="aneaSubmitReview()">Submit Feedback</button><p id="anea-review-msg"></p>
 </div></section>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./config.js?v=20260929d"></script><script src="./customer-shop.js?v=20260929d"></script><script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./config.js?v=20260929e"></script><script src="./customer-shop.js?v=20260929e"></script><script>
 (function(){
   const db=window.db||supabase.createClient(window.SUPABASE_URL,window.SUPABASE_KEY);window.db=db;
   const wa='https://wa.me/918089731324?text=Hi%20ANEA%20JWELS%2C%20I%20am%20interested%20in%20this%20product.';
@@ -68,7 +68,7 @@
       const resp=await fetch(url,{headers:{apikey:window.SUPABASE_KEY,Authorization:'Bearer '+window.SUPABASE_KEY}});
       if(!resp.ok) throw new Error('Supabase products request failed: HTTP '+resp.status);
       const all=await resp.json();
-      const featured=all.filter(p=>p.featured===true);
+      const featured=all.filter(p=>p.featured===true||p.featured==='true'||p.featured===1);
       featuredBox.innerHTML=featured.length?featured.map(card).join(''):'<p class="muted">No featured products yet.</p>';
       catalogueBox.innerHTML=all.length?all.map(card).join(''):'<p class="muted">No products in catalogue yet.</p>';
     }catch(e){
