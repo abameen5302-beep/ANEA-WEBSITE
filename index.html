@@ -84,7 +84,7 @@
     box.innerHTML='<p class="muted">Loading products…</p>';
     try{
       const base=window.SUPABASE_URL+'/rest/v1/';
-      const headers={apikey:window.SUPABASE_KEY};
+      const headers={apikey:window.SUPABASE_KEY,Authorization:'Bearer '+window.SUPABASE_KEY};
       const [prResp,crResp]=await Promise.all([
         fetch(base+'products?select=id,product_id,name,price,images,description,specs,category_id,availability&availability=neq.hidden&order=created_at.desc',{headers}),
         fetch(base+'categories?select=id,name&order=created_at.asc',{headers})
