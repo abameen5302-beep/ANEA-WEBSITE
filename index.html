@@ -53,8 +53,8 @@
     featuredBox.innerHTML='<p class="muted">Loading products…</p>';
     catalogueBox.innerHTML='<p class="muted">Loading products…</p>';
     try{
-      const url=window.SUPABASE_URL+'/rest/v1/products?select=id,product_id,name,price,images,description,specs,featured,availability&availability=neq.hidden&order=created_at.desc';
-      const resp=await fetch(url,{headers:{apikey:window.SUPABASE_KEY}});
+      const url=window.SUPABASE_URL+'/rest/v1/products?select=id,product_id,name,price,images,description,specs,featured,availability&availability=neq.hidden&order=created_at.desc&apikey='+encodeURIComponent(window.SUPABASE_KEY);
+      const resp=await fetch(url);
       if(!resp.ok) throw new Error('Supabase products request failed: HTTP '+resp.status);
       const all=await resp.json();
       const featured=all.filter(p=>p.featured===true||p.featured==='true'||p.featured===1);
