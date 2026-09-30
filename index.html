@@ -33,11 +33,11 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./config.js?v=20260930d"></script><script src="./customer-shop.js?v=20260930e"></script><script>
 (function(){
-  const db=window.db||supabase.createClient(window.SUPABASE_URL,window.SUPABASE_KEY);window.db=db;
+  const catalogDb=window.db||supabase.createClient(window.SUPABASE_URL,window.SUPABASE_KEY);window.db=catalogDb;
   const wa='https://wa.me/918089731324?text=Hi%20ANEA%20JWELS%2C%20I%20am%20interested%20in%20this%20product.';
   window.aneaAddProductById=async function(id){
     if(typeof window.aneaAddToCart!=='function'){alert('Cart is loading. Please try again.');return}
-    const r=await db.from('products').select('id,product_id,name,price,images,description,specs').eq('id',id).maybeSingle();
+    const r=await catalogDb.from('products').select('id,product_id,name,price,images,description,specs').eq('id',id).maybeSingle();
     if(r.error||!r.data){alert('Product could not be added to cart.');return}
     window.aneaAddToCart(r.data);
   };
@@ -84,8 +84,8 @@
     box.innerHTML='<p class="muted">Loading products…</p>';
     try{
       const [pr,cr]=await Promise.all([
-        db.from('products').select('id,product_id,name,price,images,description,specs,category_id,availability').neq('availability','hidden').order('created_at',{ascending:false}),
-        db.from('categories').select('id,name').order('created_at',{ascending:true})
+        catalogDb.from('products').select('id,product_id,name,price,images,description,specs,category_id,availability').neq('availability','hidden').order('created_at',{ascending:false}),
+        catalogDb.from('categories').select('id,name').order('created_at',{ascending:true})
       ]);
       if(pr.error) throw new Error('Products: '+pr.error.message);
       if(cr.error) throw new Error('Categories: '+cr.error.message);
