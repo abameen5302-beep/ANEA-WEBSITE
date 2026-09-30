@@ -76,7 +76,17 @@
       const matchesCategory=!selectedCategory||String(p.category_id||'')===String(selectedCategory);
       return matchesSearch&&matchesCategory;
     });
-    box.innerHTML=filtered.length?filtered.map(card).join(''):'<div class="no-products"><strong>No products found</strong><p class="muted">Try another product name or category.</p></div>';
+    window.aneaCatalogProducts=filtered;
+    box.innerHTML=filtered.length?filtered.map((p,i)=>{
+      const img=Array.isArray(p.images)&&p.images[0]?p.images[0]:'';
+      const cat=allCategories.find(c=>String(c.id)===String(p.category_id));
+      return '<article class="anea-card product-card" style="background:#fff;border-radius:18px;overflow:hidden;border:1px solid #eadfd4;padding:0 0 16px">'+
+        (img?'<img src="'+esc(img)+'" alt="'+esc(p.name)+'" loading="lazy" style="width:100%;aspect-ratio:1/1;object-fit:cover;display:block">':'<div style="aspect-ratio:1/1;background:#f3e8df;display:grid;place-items:center">ANEA JWELS</div>')+
+        '<div style="padding:14px 16px"><div class="muted" style="font-size:12px">'+esc(cat?.name||'Jewellery')+'</div>'+
+        '<h3 style="margin:4px 0 6px">'+esc(p.name)+'</h3><div style="font-weight:700;font-size:18px">₹'+Number(p.price||0).toFixed(2)+'</div>'+
+        '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn anea-add" type="button" onclick="aneaAddToCart(window.aneaCatalogProducts['+i+'])">Add to Cart</button>'+
+        '<button class="btn alt" type="button" onclick="aneaBuyNow(window.aneaCatalogProducts['+i+'])">Buy Now</button></div></div></article>';
+    }).join(''):'<div class="no-products"><strong>No products found</strong><p class="muted">Try another product name or category.</p></div>';
   }
 
   async function loadCatalog(){
