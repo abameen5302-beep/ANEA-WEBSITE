@@ -1,1 +1,1 @@
-window.SUPABASE_URL="https://qeeqyrawjehvexamnwbk.supabase.co";window.SUPABASE_KEY="sb_publishable_TX0bNH2H_Ej1Bhx0kxO4Iw_k3vLKbiP";
+window.SUPABASE_URL="https://qeeqyrawjehvexamnwbk.supabase.co";window.SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlZXF5cmF3amVodmV4YW1ud2JrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NTM4MDcsImV4cCI6MjEwNjIyOTgwN30.qhpiOY_csnEXIrfJx8I2tUaJ11wNQn2lxNCTU3mh37I";
