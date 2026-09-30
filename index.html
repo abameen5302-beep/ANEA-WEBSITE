@@ -83,19 +83,26 @@
     const box=document.getElementById('catalogue-products');
     box.innerHTML='<p class="muted">Loading products…</p>';
     try{
-      const [pr,cr]=await Promise.all([
-        catalogDb.from('products').select('id,product_id,name,price,images,description,specs,category_id,availability').neq('availability','hidden').order('created_at',{ascending:false}),
-        catalogDb.from('categories').select('id,name').order('created_at',{ascending:true})
+      const base=window.SUPABASE_URL+'/rest/v1/';
+      const headers={apikey:window.SUPABASE_KEY};
+      const [prResp,crResp]=await Promise.all([
+        fetch(base+'products?select=id,product_id,name,price,images,description,specs,category_id,availability&availability=neq.hidden&order=created_at.desc',{headers}),
+        fetch(base+'categories?select=id,name&order=created_at.asc',{headers})
       ]);
-      if(pr.error) throw new Error('Products: '+pr.error.message);
-      if(cr.error) throw new Error('Categories: '+cr.error.message);
-      allProducts=pr.data||[];
-      allCategories=cr.data||[];
+      if(!prResp.ok) throw new Error('Products API HTTP '+prResp.status);
+      if(!crResp.ok) throw new Error('Categories API HTTP '+crResp.status);
+      allProducts=await prResp.json();
+      allCategories=await crResp.json();
+      allProducts=(allProducts||[]).map(p=>{
+        if(typeof p.images==='string'){try{p.images=JSON.parse(p.images)}catch(e){p.images=[p.images]}}
+        if(!Array.isArray(p.images))p.images=[];
+        return p;
+      });
       renderCategoryButtons();
       renderProducts();
     }catch(e){
       console.error('ANEA product loading error:',e);
-      box.innerHTML='<p class="muted">Products could not be loaded: '+esc(e.message)+'</p>';
+      box.innerHTML='<div class="no-products"><strong>Products could not be loaded</strong><p class="muted">'+esc(e.message)+'</p><button class="btn" type="button" onclick="location.reload()">Retry</button></div>';
     }
   }
 
