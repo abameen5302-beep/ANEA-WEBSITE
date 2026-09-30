@@ -83,19 +83,19 @@
     const box=document.getElementById('catalogue-products');
     box.innerHTML='<p class="muted">Loading products…</p>';
     try{
-      const productsUrl=window.SUPABASE_URL+'/rest/v1/products?select=id,product_id,name,price,images,description,specs,category_id,availability&availability=neq.hidden&order=created_at.desc&apikey='+encodeURIComponent(window.SUPABASE_KEY);
-      const productsResp=await fetch(productsUrl,{headers:{apikey:window.SUPABASE_KEY}});
-      if(!productsResp.ok) throw new Error('Supabase products request failed: HTTP '+productsResp.status);
-      allProducts=await productsResp.json();
-
-      const categoriesUrl=window.SUPABASE_URL+'/rest/v1/categories?select=id,name&order=created_at.asc&apikey='+encodeURIComponent(window.SUPABASE_KEY);
-      const categoriesResp=await fetch(categoriesUrl,{headers:{apikey:window.SUPABASE_KEY}});
-      if(categoriesResp.ok) allCategories=await categoriesResp.json();
+      const [pr,cr]=await Promise.all([
+        db.from('products').select('id,product_id,name,price,images,description,specs,category_id,availability').neq('availability','hidden').order('created_at',{ascending:false}),
+        db.from('categories').select('id,name').order('created_at',{ascending:true})
+      ]);
+      if(pr.error) throw new Error('Products: '+pr.error.message);
+      if(cr.error) throw new Error('Categories: '+cr.error.message);
+      allProducts=pr.data||[];
+      allCategories=cr.data||[];
       renderCategoryButtons();
       renderProducts();
     }catch(e){
       console.error('ANEA product loading error:',e);
-      box.innerHTML='<p class="muted">Products could not be loaded. Please try again.</p>';
+      box.innerHTML='<p class="muted">Products could not be loaded: '+esc(e.message)+'</p>';
     }
   }
 
